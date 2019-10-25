@@ -7,7 +7,8 @@
 - [x] enum type (oneOf & oneOfType)
 - [x] shape type
 - [x] default props
-- [ ] optional prop (?)
+- [x] optional prop ([undefined, String])
+- [ ] Check RegEx
 - [ ] any prop (*)
 - [ ] match pattern prop (*)
 - [ ] arrayOf & objectOf
