@@ -1,0 +1,59 @@
+{
+  "name": "typed-component",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+     "patch": "npm version patch",
+    "prebuild": "npm run patch",
+    "build": "rimraf dist && NODE_ENV=production babel src --out-dir dist",
+     "predeploy": "npm run build",
+    "deploy": "git add . && git commit -m 'build' && git push",
+    "postdeploy": "npm run publi",
+    "publi": "npm publish",
+    "prepubli": "npm whoami || npm login"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.2",
+    "@babel/core": "^7.6.2",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.6.2",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "rimraf": "^3.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jupegarnica/typed-component.git"
+  },
+  "keywords": [
+    "react",
+    "components",
+    "webComponents",
+    "storybook"
+  ],
+  "author": "jupegarnica",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jupegarnica/typed-component/issues"
+  },
+  "homepage": "https://github.com/jupegarnica/typed-component#readme"
+}
