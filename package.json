@@ -1,6 +1,6 @@
 {
   "name": "typed-component",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "",
   "main": "dist/index.js",
@@ -10,10 +10,10 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-     "patch": "npm version patch",
+    "patch": "npm version patch",
     "prebuild": "npm run patch",
     "build": "rimraf dist && NODE_ENV=production babel src --out-dir dist",
-     "predeploy": "npm run build",
+    "predeploy": "npm run build",
     "deploy": "git add . && git commit -m 'build' && git push",
     "postdeploy": "npm run publi",
     "publi": "npm publish",
