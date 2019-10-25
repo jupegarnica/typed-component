@@ -1,7 +1,7 @@
 import React from 'react';
 
 const isType = type => val =>
-  ![, null].includes(val) && val.constructor === type;
+  ![undefined, null].includes(val) && val.constructor === type;
 
 // console.warn(isType());
 
