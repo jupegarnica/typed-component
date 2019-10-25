@@ -13,7 +13,7 @@ const ValidTypes = typedComponent({
   h: Map,
 })(_RenderProps);
 
-export const validProps = () => {
+export const ValidProps = () => {
   return (
     <div>
       <ValidTypes
@@ -29,7 +29,7 @@ export const validProps = () => {
   );
 };
 
-export const invalidProps = () => {
+export const InvalidProps = () => {
   return (
     <div>
       <ValidTypes a={2} b={'[2, 3]'} />
@@ -61,7 +61,7 @@ const Shape = typedComponent({
   },
 })(_RenderProps);
 
-export const shapeType = () => {
+export const ShapeType = () => {
   return (
     <div>
       <Shape a={{ b: 'b', c: 3 }} />
