@@ -3,8 +3,8 @@ import React from 'react';
 export const isType = type => val =>
   ![undefined, null].includes(val) && val.constructor === type;
 
-export const isNormalFunction = f =>
-  !f.name || f.name[0] === f.name[0].toLowerCase();
+export const isNormalFunction = f => typeof f === 'function' &&
+  (!f.name || f.name[0] === f.name[0].toLowerCase());
 
 export function isConstructor(f) {
   // detect is a normal function (anonymous or its name starts with lowercase)
@@ -23,9 +23,11 @@ export const isPrimitive = value => Object(value) !== value;
 export const checkShape = (shape, value) =>
   Object.keys(shape).every(key => isValidType(shape[key], value[key]));
 
-export const isValidType = (type, value) => {
+export const isValidType = (type, value, props, propName) => {
   if (isPrimitive(type)) {
     return value === type;
+  } else if (isNormalFunction(type)) {
+    return type(value, props, propName);
   } else if (isConstructor(type)) {
     return isType(type)(value);
   } else if (isType(Array)(type)) {
@@ -36,6 +38,10 @@ export const isValidType = (type, value) => {
   return false;
 };
 
+
+
+const warnInvalidPropType = (message, type, value) => console.error(message, type, value)
+
 const typedComponent = (types = {}, defaults = {}) => Component => props => {
   for (const prop in types) {
     if (types.hasOwnProperty(prop)) {
@@ -45,10 +51,12 @@ const typedComponent = (types = {}, defaults = {}) => Component => props => {
         continue;
       }
 
-      if (isValidType(type, value)) {
-        console.log('valid type!', type, value);
-      } else {
-        console.error('invalid type!', type, value);
+      try {
+        isValidType(type, value, props, prop) ||
+          warnInvalidPropType('invalid type', type, value);
+      } catch (error) {
+          warnInvalidPropType(error, type, value);
+
       }
     }
   }

@@ -97,7 +97,9 @@ describe('is normal function', () => {
     expect(isNormalFunction(Object)).toBe(false);
     expect(isNormalFunction(() => {})).toBe(true);
     expect(isNormalFunction(function name() {})).toBe(true);
-    expect(isNormalFunction(function () {})).toBe(true);
+    expect(isNormalFunction(function() {})).toBe(true);
+    expect(isNormalFunction('asdasd')).toBe(false);
+    expect(isNormalFunction(1)).toBe(false);
   });
 });
 
@@ -163,5 +165,55 @@ describe('is Valid type', () => {
         { a: 'a', b: 'c' },
       ),
     ).toBe(false);
+  });
+  test('should work for custom validators functions', () => {
+    expect(isValidType(value => value > 5, 6)).toBe(true);
+    expect(isValidType(value => value === 5, 6)).toBe(false);
+
+    expect(
+      isValidType(
+        (value, propName, props) => propName === value,
+        6,
+        { a: 'a' },
+        'a',
+      ),
+    ).toBe(false);
+  });
+  test('should use a camelCase function or anonymous', () => {
+    function validator(v) {
+      return true;
+    }
+    function Validator(v) {
+      return true;
+    }
+    expect(isValidType(validator, 3)).toBe(true);
+    expect(isValidType(Validator, 3)).toBe(false);
+  });
+
+  test('should throw', () => {
+    expect(() => {
+      isValidType(() => {
+        throw 'asd';
+      }, 6);
+    }).toThrow();
+  });
+  test('should throw custom error', () => {
+    expect(() => {
+      isValidType(value => {
+        if (value > 5) {
+          throw 'must be greater than 5';
+        }
+      }, 6);
+    }).toThrow('must be greater than 5');
+  });
+
+  test('should throw custom error', () => {
+    expect(() => {
+      isValidType(value => {
+        if (value > 5) {
+          throw new Error('must be greater than 5');
+        }
+      }, 6);
+    }).toThrow('must be greater than 5');
   });
 });
