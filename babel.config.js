@@ -7,8 +7,8 @@ module.exports = function(api) {
   return {
     presets,
     plugins,
-    exclude: ['**/*stories.js'],
-    minified:true,
-    comments:false,
+    // exclude: ['**/*stories.js', '**/*stories.jsx'],
+    minified: true,
+    comments: false,
   };
 };
