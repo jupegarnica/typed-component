@@ -11,6 +11,7 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watchAll",
+    "prepatch": "npm test",
     "patch": "npm version patch",
     "prebuild": "npm run patch",
     "build": "npm run _build",

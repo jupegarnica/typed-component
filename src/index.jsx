@@ -1,10 +1,9 @@
 import React from 'react';
 
-const isType = type => val =>
+export const isType = type => val =>
   ![undefined, null].includes(val) && val.constructor === type;
 
-
-function isConstructor(f) {
+export function isConstructor(f) {
   try {
     new f();
   } catch (err) {
@@ -12,13 +11,13 @@ function isConstructor(f) {
   }
   return true;
 }
-const isPrimitive = value => Object(value) !== value;
 
-function checkShape(shape, value) {
-  return Object.keys(shape).every(key => isValidType(shape[key], value[key]));
-}
+export const isPrimitive = value => Object(value) !== value;
 
-const isValidType = (type, value) => {
+export const checkShape = (shape, value) =>
+  Object.keys(shape).every(key => isValidType(shape[key], value[key]));
+
+export const isValidType = (type, value) => {
   if (isPrimitive(type)) {
     return value === type;
   } else if (isConstructor(type)) {
@@ -31,7 +30,7 @@ const isValidType = (type, value) => {
   return false;
 };
 
-export default (types = {}, defaults = {}) => Component => props => {
+const typedComponent = (types = {}, defaults = {}) => Component => props => {
   for (const prop in types) {
     if (types.hasOwnProperty(prop)) {
       const value = props[prop];
@@ -51,3 +50,6 @@ export default (types = {}, defaults = {}) => Component => props => {
 
   return <Component {..._props} />;
 };
+
+
+export default typedComponent;
