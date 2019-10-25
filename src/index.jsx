@@ -3,7 +3,13 @@ import React from 'react';
 export const isType = type => val =>
   ![undefined, null].includes(val) && val.constructor === type;
 
+export const isNormalFunction = f =>
+  !f.name || f.name[0] === f.name[0].toLowerCase();
+
 export function isConstructor(f) {
+  // detect is a normal function (anonymous or its name starts with lowercase)
+  if (isNormalFunction(f)) return false;
+
   try {
     new f();
   } catch (err) {
@@ -50,6 +56,5 @@ const typedComponent = (types = {}, defaults = {}) => Component => props => {
 
   return <Component {..._props} />;
 };
-
 
 export default typedComponent;

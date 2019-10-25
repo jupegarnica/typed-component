@@ -1,4 +1,10 @@
-import { isType, isPrimitive, isConstructor } from './index';
+import {
+  isType,
+  isPrimitive,
+  isConstructor,
+  isValidType,
+  isNormalFunction,
+} from './index';
 
 describe('test type by constructor', () => {
   test('should return true for basic JS types', () => {
@@ -33,7 +39,6 @@ describe('test type by constructor', () => {
   });
 
   test('should return false is it not a type', () => {
-
     expect(isType(Object)('{ a: 1 }')).toBe(false);
 
     expect(isType(Boolean)('true')).toBe(false);
@@ -47,51 +52,116 @@ describe('test type by constructor', () => {
   });
 
   test('should recognize instance of classes', () => {
-
-    class Car {};
+    class Car {}
     expect(isType(Car)(new Car())).toBe(true);
-
 
     class Porsche extends Car {}
 
     expect(isType(Car)(new Porsche())).toBe(false);
 
-
     expect(isType(Object)(new Array())).toBe(false);
-
-  })
-
+  });
 });
-
-
 
 describe('isPrimitive', () => {
-
-
   test(' should recognize primitive types', () => {
-      expect(isPrimitive('hola')).toBe(true);
-      expect(isPrimitive(1)).toBe(true);
-      expect(isPrimitive(false)).toBe(true);
-      expect(isPrimitive(NaN)).toBe(true);
+    expect(isPrimitive('hola')).toBe(true);
+    expect(isPrimitive(1)).toBe(true);
+    expect(isPrimitive(false)).toBe(true);
+    expect(isPrimitive(NaN)).toBe(true);
 
-      expect(isPrimitive(undefined)).toBe(true);
-      expect(isPrimitive(null)).toBe(true);
+    expect(isPrimitive(undefined)).toBe(true);
+    expect(isPrimitive(null)).toBe(true);
 
-      expect(isPrimitive({})).toBe(false);
-      expect(isPrimitive([])).toBe(false);
-  })
-
+    expect(isPrimitive({})).toBe(false);
+    expect(isPrimitive(() => {})).toBe(false);
+    expect(isPrimitive([])).toBe(false);
+  });
 });
 
-
-describe('isConstructor',()=> {
+describe('isConstructor', () => {
   test('should detect if a value can be instantiated with new', () => {
-
     expect(isConstructor(Object)).toBe(true);
     expect(isConstructor(Array)).toBe(true);
     expect(isConstructor(console)).toBe(false);
     expect(isConstructor(12)).toBe(false);
+    expect(isConstructor(() => {})).toBe(false);
+    expect(isConstructor(function name() {})).toBe(false);
+    const fn = () => {};
+    expect(isConstructor(fn)).toBe(false);
+  });
+});
 
-  })
+describe('is normal function', () => {
+  test('should detect if a function is anonymous or his name starts with lowercase (not a class)', () => {
+    expect(isNormalFunction(Object)).toBe(false);
+    expect(isNormalFunction(() => {})).toBe(true);
+    expect(isNormalFunction(function name() {})).toBe(true);
+    expect(isNormalFunction(function () {})).toBe(true);
+  });
+});
 
+describe('is Valid type', () => {
+  test('should work for constructors', () => {
+    expect(isValidType(String, 'a')).toBe(true);
+    expect(isValidType(String, 1)).toBe(false);
+  });
+  test('should work for primitives', () => {
+    expect(isValidType('a', 'a')).toBe(true);
+    expect(isValidType('a', `a${''}`)).toBe(true);
+
+    expect(isValidType('a', 'b')).toBe(false);
+
+    expect(isValidType(1.0, 1)).toBe(true);
+    expect(isValidType(2, 1)).toBe(false);
+
+    expect(isValidType(true, true)).toBe(true);
+    expect(isValidType(undefined, undefined)).toBe(true);
+    expect(isValidType(null, null)).toBe(true);
+  });
+  test('should work for enums of constructors', () => {
+    expect(isValidType([String, Function], 'a')).toBe(true);
+    expect(isValidType([String, Function], 1)).toBe(false);
+    expect(isValidType([String, Object], [])).toBe(false);
+  });
+  test('should work for enums of primitives', () => {
+    expect(isValidType(['b', 'a'], 'a')).toBe(true);
+    expect(isValidType(['b', 'a'], 'c')).toBe(false);
+    expect(isValidType([undefined, String], 'c')).toBe(true);
+    expect(isValidType([undefined, String], undefined)).toBe(true);
+    expect(isValidType([undefined, Number], 'c')).toBe(false);
+  });
+  test('should work for shapes', () => {
+    expect(isValidType({ a: Number }, { a: 1 })).toBe(true);
+    expect(isValidType({ a: Number }, { a: 'a' })).toBe(false);
+
+    expect(isValidType({ a: [Number, String] }, { a: 'a' })).toBe(true);
+    expect(
+      isValidType(
+        {
+          a: [Number, String],
+          b: [undefined, 'b'],
+        },
+        { a: 'a' },
+      ),
+    ).toBe(true);
+    expect(
+      isValidType(
+        {
+          a: [Number, String],
+          b: [undefined, 'b'],
+        },
+        { a: 'a', b: 'b' },
+      ),
+    ).toBe(true);
+    expect(
+      isValidType(
+        {
+          a: [Number, String],
+          b: [undefined, 'b'],
+        },
+        { a: 'a', b: 'c' },
+      ),
+    ).toBe(false);
+  });
 });
