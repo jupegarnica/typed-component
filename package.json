@@ -15,7 +15,7 @@
     "patch": "npm version patch",
     "prebuild": "npm run patch",
     "build": "npm run _build",
-    "_build": "rimraf dist && NODE_ENV=production babel src --ignore \"src/**/*.stories.jsx\",\"src/**/*.test.jsx\",\"src/**/*.test.js\"  --out-dir dist --source-maps",
+    "_build": "rimraf dist && NODE_ENV=production babel src   --out-dir dist --source-maps",
     "predeploy": "npm run build",
     "deploy": "git add . && git commit -m 'build' && git push origin master",
     "postdeploy": "npm run publi",
