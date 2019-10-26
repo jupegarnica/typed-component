@@ -104,6 +104,26 @@ export const DefaultsType = () => {
   );
 };
 
+
+
+
+
+const RegExp = typedComponent({
+  '/[bc]/': ['3','b'],
+})(_RenderProps);
+
+export const RegExpTest = () => {
+  return (
+    <div>
+      <RegExp />
+      <RegExp c='3' />
+      <RegExp b='b' c='3' />
+      <RegExp b='a' c='3' />
+      <RegExp b='a' c='2' />
+    </div>
+  );
+};
+
 export default {
   title: 'typedComponent',
 };
