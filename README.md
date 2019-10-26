@@ -9,7 +9,7 @@
 - [x] default props
 - [x] optional prop ([undefined, String])
 - [x] custom prop validation with a function (value,props, propName, ComponentName)
-- [ ] Check RegEx (now can be done with a custom validator)
+- [x] Check RegEx
 - [ ] any prop (*)
 - [ ] match pattern prop (*)
 - [ ] arrayOf & objectOf

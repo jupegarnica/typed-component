@@ -8,6 +8,9 @@ import {
 
 describe('test type by constructor', () => {
   test('should return true for basic JS types', () => {
+    expect(isType(RegExp)(/regexp/)).toBe(true);
+    expect(isType(RegExp)(new RegExp('foo'))).toBe(true);
+
     expect(isType(Object)({ a: 1 })).toBe(true);
     expect(isType(Object)(new Object({ b: 2 }))).toBe(true);
 
@@ -74,6 +77,7 @@ describe('isPrimitive', () => {
     expect(isPrimitive(null)).toBe(true);
 
     expect(isPrimitive({})).toBe(false);
+    expect(isPrimitive(/regex/)).toBe(false);
     expect(isPrimitive(() => {})).toBe(false);
     expect(isPrimitive([])).toBe(false);
   });
@@ -104,9 +108,17 @@ describe('is normal function', () => {
 });
 
 describe('is Valid type', () => {
+  test('should check RegExp', () => {
+    expect(isValidType(/.ola/, 'hola')).toBe(true);
+    expect(isValidType(/.ola/, 'sola')).toBe(true);
+    expect(isValidType(/.ola/, 'ola')).toBe(false);
+
+  })
+
   test('should work for constructors', () => {
     expect(isValidType(String, 'a')).toBe(true);
     expect(isValidType(String, 1)).toBe(false);
+    expect(isValidType(RegExp, /12/)).toBe(true);
   });
   test('should work for primitives', () => {
     expect(isValidType('a', 'a')).toBe(true);
@@ -197,7 +209,7 @@ describe('is Valid type', () => {
       }, 6);
     }).toThrow();
   });
-  test('should throw custom error', () => {
+  test('should throw custom message', () => {
     expect(() => {
       isValidType(value => {
         if (value > 5) {
@@ -207,7 +219,7 @@ describe('is Valid type', () => {
     }).toThrow('must be greater than 5');
   });
 
-  test('should throw custom error', () => {
+  test('should throw custom Error', () => {
     expect(() => {
       isValidType(value => {
         if (value > 5) {
@@ -217,3 +229,14 @@ describe('is Valid type', () => {
     }).toThrow('must be greater than 5');
   });
 });
+
+
+// describe('test RegEx', () => {
+//   test('should ', () => {
+//       let regex = new RegExp(eval('/.la/'));
+//       expect('hola'.match(regex)).toBeTruthy();
+//       console.log(regex.test('ola'))
+//   })
+
+
+// })
