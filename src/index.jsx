@@ -46,6 +46,7 @@ const warnInvalidPropType = (message, type, value) =>
   console.error(message, type, value);
 
 const typedComponent = (types = {}, defaults = {}) => Component => props => {
+
   for (const prop in types) {
     if (types.hasOwnProperty(prop)) {
       const value = props[prop];
@@ -56,9 +57,9 @@ const typedComponent = (types = {}, defaults = {}) => Component => props => {
 
       try {
         isValidType(type, value, props, prop) ||
-          warnInvalidPropType('invalid type', type, value);
+          warnInvalidPropType(`prop value ${value} do not match type ${type}`);
       } catch (error) {
-        warnInvalidPropType(error, type, value);
+        warnInvalidPropType(error);
       }
     }
   }
