@@ -13,6 +13,8 @@ const ValidTypes = typedComponent({
   h: Map,
 })(_RenderProps);
 
+
+
 export const ValidProps = () => {
   return (
     <div>
