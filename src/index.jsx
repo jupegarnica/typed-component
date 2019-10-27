@@ -3,6 +3,11 @@ import React from 'react';
 export const isType = type => val =>
   ![undefined, null].includes(val) && val.constructor === type;
 
+export const isInstanceOf = type => val =>
+  val instanceof type
+
+
+
 export const isNormalFunction = f =>
   typeof f === 'function' &&
   (!f.name || f.name[0] === f.name[0].toLowerCase());
@@ -64,20 +69,29 @@ const stringToRegExp = string => new RegExp(eval(string));
 
 const stringRegExp = /^\/.+\/$/;
 const isRegExp = value => stringRegExp.test(value);
+const notIsRegExp = value => !isRegExp(value);
 const typedComponent = (
   types = {},
   defaults = {},
 ) => Component => props => {
-  const propsToTest = Object.entries(props);
-
-  const regExpToCheck = Object.entries(types).filter(
-    ([propName]) => isRegExp(propName),
+  const propsToTest = Object.keys(types).filter(notIsRegExp);
+  const regExpToCheck = Object.keys(types).filter(isRegExp);
+  const untestedReceivedProps = Object.keys(props).filter(
+    propName => !propsToTest.includes(propName),
   );
 
-  propsToTest.forEach(([prop, value]) =>
-    testOrWarn(types[prop], value, props, prop),
-  );
+console.log('propsToTest', propsToTest);
+console.log('regExpToCheck', regExpToCheck);
+console.log('untestedReceivedProps', untestedReceivedProps)
 
+  propsToTest.forEach(propName =>
+    testOrWarn(
+      types[propName],
+      props[propName],
+      props,
+      propName,
+    ),
+  );
 
   const testedProps = propsToTest.filter(
     ([propName]) => !isRegExp(propName),

@@ -8,42 +8,66 @@ const RenderProps = props => (
 );
 
 const ValidTypes = typedComponent({
-  a: String,
-  b: Array,
-  c: Object,
-  d: String,
-  e: Number,
-  f: Function,
-  h: Map,
+  String: String,
+  Boolean: Boolean,
+  Array: Array,
+  Object: Object,
+  String: String,
+  Number: Number,
+  Function: Function,
+  RegExp: RegExp,
+  Map: Map,
+  Undefined: undefined,
 })(RenderProps);
 
+const div = document.createElement('div');
+const render = c => ReactDom.render(c, div);
+
 describe('basic usage', () => {
-  const div = document.createElement('div');
   global.console = {
     error: jest.fn(),
     // TODO: REMOVE THIS, it shouldn't log valid prop
+    log: console.log,
     log: jest.fn(),
   };
 
-  test('should render checking valid props', () => {
-    ReactDom.render(
+  test('should render and test valid props', () => {
+    render(
       <ValidTypes
-        a='1'
-        b={[2, 3]}
-        c={{ c: 4 }}
-        d={'text'}
-        e={5}
-        f={() => {}}
-        h={new Map()}
+        String='1'
+        String={'text'}
+        Number={5}
+        Boolean
+        Boolean={false}
+        Array={[2, 3]}
+        Object={{ c: 4 }}
+        Function={() => {}}
+        RegExp={/hola/}
+        Map={new Map()}
       />,
-      div,
     );
     expect(global.console.error).not.toHaveBeenCalled();
 
     // expect(global.console.log).toHaveBeenCalled();
   });
-  test('should log error on invalid props', () => {
-    ReactDom.render(<InvalidProps />, div);
-    expect(global.console.error).toHaveBeenCalled();
+  test('should render and log error on invalid props', () => {
+    render(
+      <ValidTypes
+        String
+        Number
+        Boolean={0}
+        Array
+        Object
+        Function
+        RegExp
+        Map
+        Undefined
+      />,
+    );
+    expect(global.console.error).toHaveBeenCalledTimes(9);
+  });
+  test('should detect all types props are required', () => {
+    render(<ValidTypes />);
+    expect(global.console.error).toHaveBeenCalledTimes(9);
   });
 });
