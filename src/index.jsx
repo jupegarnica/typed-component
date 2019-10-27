@@ -54,21 +54,24 @@ export const isValidType = (type, value, props, propName) => {
 const testOrWarn = (type, value, props, propName) => {
   try {
     isValidType(type, value, props, propName) ||
-      warnInvalidPropType(
+      error(
         `prop ${propName} with value ${value} do not match type ${type}`,
       );
   } catch (error) {
-    warnInvalidPropType(error);
+    error(error);
   }
 };
 
-const warnInvalidPropType = (message, type, value) =>
-  console.error(message, type, value);
+const error = (...args) =>
+  {
+    console.error(...args);
+    console.log(...args);
+  }
 
-const stringToRegExp = string => new RegExp(eval(string));
+// const stringToRegExp = string => new RegExp(eval(string));
 
 const stringRegExp = /^\/.+\/$/;
-const isRegExp = value => stringRegExp.test(value);
+const isRegExp = value  =>  value && stringRegExp.test(value);
 const notIsRegExp = value => !isRegExp(value);
 const typedComponent = (
   types = {},
@@ -80,9 +83,9 @@ const typedComponent = (
     propName => !propsToTest.includes(propName),
   );
 
-console.log('propsToTest', propsToTest);
-console.log('regExpToCheck', regExpToCheck);
-console.log('untestedReceivedProps', untestedReceivedProps)
+// console.log('propsToTest', propsToTest);
+// console.log('regExpToCheck', regExpToCheck);
+// console.log('untestedReceivedProps', untestedReceivedProps)
 
   propsToTest.forEach(propName =>
     testOrWarn(
@@ -122,11 +125,11 @@ console.log('untestedReceivedProps', untestedReceivedProps)
 
   //       try {
   //         isValidType(type, value, props, propName) ||
-  //           warnInvalidPropType(
+  //           error(
   //             `prop ${propName} with value ${value} do not match type ${type}`,
   //           );
   //       } catch (error) {
-  //         warnInvalidPropType(error);
+  //         error(error);
   //       }
   //     }
   //   }
@@ -141,11 +144,11 @@ console.log('untestedReceivedProps', untestedReceivedProps)
 
   //   try {
   //     isValidType(type, value, props, propName) ||
-  //       warnInvalidPropType(
+  //       error(
   //         `prop ${propName} with value ${value} do not match type ${type}`,
   //       );
   //   } catch (error) {
-  //     warnInvalidPropType(error);
+  //     error(error);
   //   }
   // }
 
