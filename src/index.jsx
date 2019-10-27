@@ -46,39 +46,58 @@ export const isValidType = (type, value, props, propName) => {
   return false;
 };
 
+const testOrWarn = (type, value, props, propName) => {
+  try {
+    isValidType(type, value, props, propName) ||
+      warnInvalidPropType(
+        `prop ${propName} with value ${value} do not match type ${type}`,
+      );
+  } catch (error) {
+    warnInvalidPropType(error);
+  }
+};
+
 const warnInvalidPropType = (message, type, value) =>
   console.error(message, type, value);
 
 const stringToRegExp = string => new RegExp(eval(string));
 
-
-
 const stringRegExp = /^\/.+\/$/;
-
-
-
-
+const isRegExp = value => stringRegExp.test(value);
 const typedComponent = (
   types = {},
   defaults = {},
 ) => Component => props => {
-  const allPropNameToCheck = Object.keys(types);
+  const propsToTest = Object.entries(props);
 
-  const regExpPropNameArray = allPropNameToCheck.filter(
-    propName => stringRegExp.test(propName),
+  const regExpToCheck = Object.entries(types).filter(
+    ([propName]) => isRegExp(propName),
   );
 
-  const stringPropNameArray = allPropNameToCheck.filter(
-    propName => !stringRegExp.test(propName),
+  propsToTest.forEach(([prop, value]) =>
+    testOrWarn(types[prop], value, props, prop),
   );
 
+
+  const testedProps = propsToTest.filter(
+    ([propName]) => !isRegExp(propName),
+  );
+  // const regExpPropNameArray = allPropNameToCheck
+  // const allPropNameToCheck = Object.keys(types);
+
+  // const regExpPropNameArray = allPropNameToCheck.filter(
+  //   propName => stringRegExp.test(propName),
+  // );
+
+  // const stringPropNameArray = allPropNameToCheck.filter(
+  //   propName => !stringRegExp.test(propName),
+  // );
 
   //  CHECK PROP NAME WITH REGEXP
   //
   // const propsToCheckByRegExp = Object.keys(props).filter(
   //   propName => !stringPropNameArray.includes(propName),
   // );
-
 
   // for (const regExpPropName of regExpPropNameArray) {
   //   const regExp = stringToRegExp(types[regExpPropName]);
@@ -99,30 +118,32 @@ const typedComponent = (
   //   }
   // }
 
+  // for (const propName of stringPropNameArray) {
+  //   const value = props[propName];
+  //   const type = types[propName];
+  //   if (typeof value === 'undefined') {
+  //     continue;
+  //   }
 
-  for (const propName of stringPropNameArray) {
-    const value = props[propName];
-    const type = types[propName];
-    if (typeof value === 'undefined') {
-      continue;
-    }
-
-    try {
-      isValidType(type, value, props, propName) ||
-        warnInvalidPropType(
-          `prop ${propName} with value ${value} do not match type ${type}`,
-        );
-    } catch (error) {
-      warnInvalidPropType(error);
-    }
-  }
+  //   try {
+  //     isValidType(type, value, props, propName) ||
+  //       warnInvalidPropType(
+  //         `prop ${propName} with value ${value} do not match type ${type}`,
+  //       );
+  //   } catch (error) {
+  //     warnInvalidPropType(error);
+  //   }
+  // }
 
   // for (const prop in types) {
   //   if (types.hasOwnProperty(prop)) {
 
   //   }
   // }
-  const _props = { ...defaults, ...props };
+  const _props = {
+    ...defaults,
+    ...props,
+  };
 
   return <Component {..._props} />;
 };
