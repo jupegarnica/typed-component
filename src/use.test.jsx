@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import { InvalidProps } from './typedComponent.stories';
 import typedComponent from './index';
 
 const RenderProps = props => (
@@ -32,7 +31,7 @@ beforeAll(() => {
     //  error: console.error,
     // TODO: REMOVE THIS, it shouldn't log valid prop
     log: jest.fn(),
-    // log: console.log,
+    log: console.log,
   };
 });
 describe('basic usage by Constructor', () => {
@@ -102,5 +101,91 @@ describe('Shapes', () => {
   test('should work shapes', () => {
     render(<Shape shape={{ a: 1 }} />);
     expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('regex', () => {
+  const Regex = typedComponent({
+    '/a/': Number,
+    '/c/': Function,
+    '/d/': ['hola', 'adios'],
+  })(RenderProps);
+  test('should work', () => {
+    render(<Regex a={2} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should work', () => {
+    render(<Regex a={2} c={() => {}} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should work', () => {
+    render(<Regex a={2} c={() => {}} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should work', () => {
+    render(<Regex d='hola' />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should work', () => {
+    render(<Regex d='adios' />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
+    render(<Regex d='nada' />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+  test('should warn', () => {
+    render(<Regex a='a' b='b' />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+  test('should warn', () => {
+    render(<Regex a='a' c='b' />);
+    expect(global.console.error).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('regex advanced', () => {
+  const Regex = typedComponent({
+    a: String, // this is mandatory over a regex match
+    '/a|b/': Number,
+  })(RenderProps);
+  test('should work', () => {
+    render(<Regex a='a' />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+
+  test('should work', () => {
+    render(<Regex a='a' b={2} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
+    render(<Regex />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+  test('should warn', () => {
+    render(<Regex b='b' />);
+    expect(global.console.error).toHaveBeenCalledTimes(2);
+  });
+  test('should warn', () => {
+    render(<Regex a={2} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+  test('should warn', () => {
+    render(<Regex a='a' b='b' />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+  test('should warn', () => {
+    render(<Regex a={2} b='b' />);
+    expect(global.console.error).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('regex pro', () => {
+  const Regex = typedComponent({
+    p: { '/.+/': Number },
+  })(RenderProps);
+  test('should work', () => {
+    render(<Regex p={{a:2}} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
   });
 });
