@@ -32,9 +32,9 @@ const iterateObject = (whatToDo, types, props) => {
     propName => !propsTypes.includes(propName),
   );
   if (whatToDo.name === 'isValidType') {
-    console.log('untestedReceivedProps', untestedReceivedProps);
-    console.log('propsTypes', propsTypes);
-    console.log('regExpToCheck', regExpToCheck);
+    // console.log('untestedReceivedProps', untestedReceivedProps);
+    // console.log('propsTypes', propsTypes);
+    // console.log('regExpToCheck', regExpToCheck);
   }
   let response;
 
@@ -45,7 +45,6 @@ const iterateObject = (whatToDo, types, props) => {
       props,
       propName,
     );
-
   });
   regExpToCheck.forEach(regexpString => {
     untestedReceivedProps.forEach(propName => {
@@ -70,14 +69,14 @@ export const isValidType = (type, value, props, propName) => {
     return checkRegExp(type, value);
   } else if (isPrimitive(type)) {
     return value === type;
-  } else if (isNormalFunction(type)) {
-    return type(value, props, propName);
   } else if (isConstructor(type)) {
     return isType(type)(value);
   } else if (isType(Array)(type)) {
     return type.some(_type => isValidType(_type, value));
   } else if (isType(Object)(type) && isType(Object)(value)) {
     return checkShape(type, value);
+  } else if (isNormalFunction(type)) {
+    return type(value, props, propName);
   }
   return false;
 };
@@ -86,20 +85,20 @@ const toString = JSON.stringify;
 
 const testOrWarn = (type, value, props, propName) => {
   try {
-    isValidType(type, value, props, propName) ||
+    return isValidType(type, value, props, propName) ||
       error(
         `prop ${propName} with value ${toString(
           value,
         )} do not match type ${toString(type)}`,
       );
   } catch (error) {
-    error(error);
+    return error(error);
   }
 };
 
 const error = (...args) => {
   console.error(...args);
-  console.log(...args);
+  // console.log(...args);
 };
 
 const checkRegExp = (regExp, value) => regExp.test(value);
