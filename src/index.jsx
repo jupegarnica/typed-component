@@ -24,19 +24,46 @@ export function isConstructor(f) {
 export const isPrimitive = value => !(value instanceof Object);
 // export const isPrimitive = value => Object(value) !== value;
 
-export const checkShape = (shape, value) => {
+const iterateObject = (whatToDo, types, props) => {
+  const propsTypes = Object.keys(types).filter(notIsRegExp);
+  const regExpToCheck = Object.keys(types).filter(isRegExp);
 
-  // const regExpPropsName = Object.keys(shape).filter(isRegExp);
-  // const untestedPropsName = Object.key(value).filter(isRegExp);
-  const normalPropsName = Object.keys(shape).filter(prop => !isRegExp(prop));
-  // regExpPropsName.forEach( regexString => )
-  return normalPropsName.every(key =>
-    isValidType(shape[key], value[key]),
+  const untestedReceivedProps = Object.keys(props).filter(
+    propName => !propsTypes.includes(propName),
   );
+  if (whatToDo.name === 'isValidType') {
+    console.log('untestedReceivedProps', untestedReceivedProps);
+    console.log('propsTypes', propsTypes);
+    console.log('regExpToCheck', regExpToCheck);
+  }
+  let response;
 
-}
+  propsTypes.forEach(propName => {
+    response = whatToDo(
+      types[propName],
+      props[propName],
+      props,
+      propName,
+    );
 
-const checkRegExp = (regExp, value) => regExp.test(value);
+  });
+  regExpToCheck.forEach(regexpString => {
+    untestedReceivedProps.forEach(propName => {
+      if (stringToRegExp(regexpString).test(propName)) {
+        response = whatToDo(
+          types[regexpString],
+          props[propName],
+          props,
+          propName,
+        );
+      }
+    });
+  });
+  return response;
+};
+
+export const checkShape = (types, props) =>
+  iterateObject(isValidType, types, props);
 
 export const isValidType = (type, value, props, propName) => {
   if (isType(RegExp)(type)) {
@@ -55,11 +82,15 @@ export const isValidType = (type, value, props, propName) => {
   return false;
 };
 
+const toString = JSON.stringify;
+
 const testOrWarn = (type, value, props, propName) => {
   try {
     isValidType(type, value, props, propName) ||
       error(
-        `prop ${propName} with value ${value} do not match type ${type}`,
+        `prop ${propName} with value ${toString(
+          value,
+        )} do not match type ${toString(type)}`,
       );
   } catch (error) {
     error(error);
@@ -71,107 +102,17 @@ const error = (...args) => {
   console.log(...args);
 };
 
+const checkRegExp = (regExp, value) => regExp.test(value);
 const stringToRegExp = string => new RegExp(eval(string));
-
-const stringRegExp = /^\/.+\/$/;
-const isRegExp = value => value && stringRegExp.test(value);
+const isRegExp = value => value && /^\/.+\/$/.test(value);
 const notIsRegExp = value => !isRegExp(value);
+
 const typedComponent = (
   types = {},
   defaults = {},
 ) => Component => props => {
-  const propsToTest = Object.keys(types).filter(notIsRegExp);
-  const regExpToCheck = Object.keys(types).filter(isRegExp);
-  const untestedReceivedProps = Object.keys(props).filter(
-    propName => !propsToTest.includes(propName),
-  );
+  iterateObject(testOrWarn, types, props);
 
-  // console.log('propsToTest', propsToTest);
-  console.log('regExpToCheck', regExpToCheck);
-  console.log('untestedReceivedProps', untestedReceivedProps);
-
-  propsToTest.forEach(propName =>
-    testOrWarn(
-      types[propName],
-      props[propName],
-      props,
-      propName,
-    ),
-  );
-  regExpToCheck.forEach(regexpString => {
-    untestedReceivedProps.forEach(propName => {
-      if (stringToRegExp(regexpString).test(propName)) {
-        testOrWarn(
-          types[regexpString],
-          props[propName],
-          props,
-          propName,
-        );
-      }
-    });
-  });
-
-  const testedProps = propsToTest.filter(
-    ([propName]) => !isRegExp(propName),
-  );
-  // const regExpPropNameArray = allPropNameToCheck
-  // const allPropNameToCheck = Object.keys(types);
-
-  // const regExpPropNameArray = allPropNameToCheck.filter(
-  //   propName => stringRegExp.test(propName),
-  // );
-
-  // const stringPropNameArray = allPropNameToCheck.filter(
-  //   propName => !stringRegExp.test(propName),
-  // );
-
-  //  CHECK PROP NAME WITH REGEXP
-  //
-  // const propsToCheckByRegExp = Object.keys(props).filter(
-  //   propName => !stringPropNameArray.includes(propName),
-  // );
-
-  // for (const regExpPropName of regExpPropNameArray) {
-  //   const regExp = stringToRegExp(types[regExpPropName]);
-  //   for (const propName of propsToCheckByRegExp) {
-  //     if(regExp.test(propName)) {
-  //       const value = props[propName];
-  //       const type = types[regExpPropName];
-
-  //       try {
-  //         isValidType(type, value, props, propName) ||
-  //           error(
-  //             `prop ${propName} with value ${value} do not match type ${type}`,
-  //           );
-  //       } catch (error) {
-  //         error(error);
-  //       }
-  //     }
-  //   }
-  // }
-
-  // for (const propName of stringPropNameArray) {
-  //   const value = props[propName];
-  //   const type = types[propName];
-  //   if (typeof value === 'undefined') {
-  //     continue;
-  //   }
-
-  //   try {
-  //     isValidType(type, value, props, propName) ||
-  //       error(
-  //         `prop ${propName} with value ${value} do not match type ${type}`,
-  //       );
-  //   } catch (error) {
-  //     error(error);
-  //   }
-  // }
-
-  // for (const prop in types) {
-  //   if (types.hasOwnProperty(prop)) {
-
-  //   }
-  // }
   const _props = {
     ...defaults,
     ...props,

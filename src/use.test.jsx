@@ -17,6 +17,7 @@ const ValidTypes = typedComponent({
   RegExp: RegExp,
   Map: Map,
   Undefined: undefined,
+  Null: null,
 })(RenderProps);
 
 const Primitives = typedComponent({
@@ -49,6 +50,7 @@ describe('basic usage by Constructor', () => {
         RegExp={/hola/}
         Map={new Map()}
         Undefined={undefined}
+        Null={null}
       />,
     );
     expect(global.console.error).not.toHaveBeenCalled();
@@ -67,13 +69,14 @@ describe('basic usage by Constructor', () => {
         RegExp
         Map
         Undefined
+        Null
       />,
     );
-    expect(global.console.error).toHaveBeenCalledTimes(9);
+    expect(global.console.error).toHaveBeenCalledTimes(10);
   });
   test('should detect all types props are required', () => {
     render(<ValidTypes Undefined />);
-    expect(global.console.error).toHaveBeenCalledTimes(9);
+    expect(global.console.error).toHaveBeenCalledTimes(10);
   });
 });
 
@@ -98,8 +101,12 @@ describe('Shapes', () => {
     render(<Shape shape={{ a: 'a' }} />);
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
-  test('should work shapes', () => {
+  test('should warn shapes', () => {
     render(<Shape shape={{ a: 1 }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+  test('should warn shapes', () => {
+    render(<Shape shape={{ b: 2, c:'c' }} />);
     expect(global.console.error).toHaveBeenCalledTimes(1);
   });
 });
@@ -180,12 +187,102 @@ describe('regex advanced', () => {
   });
 });
 
-describe('regex pro', () => {
+describe('regex check in shapes', () => {
   const Regex = typedComponent({
-    p: { '/.+/': Number },
+    shape: {
+      '/.+/': Number,
+      '/regex/': /regex/,
+    },
   })(RenderProps);
   test('should work', () => {
-    render(<Regex p={{a:2}} />);
+    render(<Regex shape={{ a: 2 }} />);
     expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
+    render(<Regex shape={{ a: [] }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+  test('should work', () => {
+    render(<Regex shape={{ regex: 'regex' }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
+    render(<Regex shape={{ regex: 2 }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+   test('should work recursively', () => {
+     render(<Regex shape={{ regex: 'regex' }} />);
+     expect(global.console.error).toHaveBeenCalledTimes(0);
+   });
+});
+
+
+describe('regex check in shapes mixed', () => {
+  const Regex = typedComponent({
+    shape: {
+      a: Number,
+      '/ex/': 'regex',
+    },
+  })(RenderProps);
+  test('should work ', () => {
+    render(<Regex shape={{ a: 1, regex: 'regex' }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn ', () => {
+    render(<Regex shape={{ a: '1' }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+   test('should warn ', () => {
+     render(<Regex shape={{ a: 1, regex:1}} />);
+     expect(global.console.error).toHaveBeenCalledTimes(1);
+   });
+  // test('should work ', () => {
+  //   render(<Regex shape={{ ex: 'regex' }} />);
+  //   expect(global.console.error).toHaveBeenCalledTimes(1);
+  // });
+
+});
+
+describe('regex check in shapes recursively', () => {
+  const Regex = typedComponent({
+    shape: {
+      [/.+/]: {
+        a: Number
+      },
+    },
+  })(RenderProps);
+  test('should work ', () => {
+    render(<Regex shape={{ any: {a: 2} }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn ', () => {
+    render(<Regex shape={{ whatever: { a: 'a' } }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+   test('should warn even if complex', () => {
+     render(<Regex shape={{ whatever: { a: 'a' } }} />);
+     expect(global.console.error).toHaveBeenCalledTimes(1);
+   });
+});
+
+
+describe('regex check in shapes recursively even if complex', () => {
+  const Regex = typedComponent({
+    shape: {
+      [/^price/]: Number,
+      [/^zip/]: String,
+    },
+  })(RenderProps);
+  test('should work ', () => {
+    render(<Regex shape={{ priceTotal: 1 }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn ', () => {
+    render(<Regex shape={{ zipCode:'hw30' }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn even if complex', () => {
+    render(<Regex shape={{ zip: 123 }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
   });
 });
