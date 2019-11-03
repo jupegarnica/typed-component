@@ -411,7 +411,7 @@ describe('regex check in shapes recursively even if complex', () => {
 });
 
 describe('Common cases', () => {
-  describe('arrayOfStrings', () => {
+  describe('arrayOf', () => {
     const Comp = typedComponent({
       arrayOfStrings: {
         '/[0-9]+/': String,
@@ -427,7 +427,7 @@ describe('Common cases', () => {
     });
   });
 
-  describe('Object of Number', () => {
+  describe('ObjectOf', () => {
     const Comp = typedComponent({
       obj: {
         '/.+/': Number,
