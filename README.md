@@ -373,13 +373,17 @@ describe('onOnly valid props', () => {
 
 describe('regex advanced', () => {
   const Regex = typedComponent({
-    a: String, // this is mandatory over a regex match
-    '/a|b/': Number,
+    a: String, // required prop
+    '/a|b/': Number, // optional prop (only check props that do not have been check by required props)
   })(RenderProps);
   test('should work', () => {
     render(<Regex a='a' />);
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
+   test('should work', () => {
+     render(<Regex a={2} />);
+     expect(global.console.error).toHaveBeenCalledTimes(1);
+   });
 
   test('should work', () => {
     render(<Regex a='a' b={2} />);
