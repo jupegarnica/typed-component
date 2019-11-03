@@ -2,7 +2,70 @@
 
 Another syntax to type props
 
-## Use
+
+
+## Get started
+
+```bash
+npm install typed-component
+
+# or
+
+yarn add typed-component
+
+```
+
+### Use
+
+
+```jsx
+import typed from 'typed-component';
+import Component from './component';
+
+// check constructor
+const MyTypedComponent = typed({
+     onClick: Function
+})(Component)
+
+
+```
+
+```jsx
+// check enums
+const MyTypedComponent = typed({
+     id: [undefined, String]   // optional prop
+})(Component)
+
+```
+
+
+```jsx
+// check primitives
+const MyTypedComponent = typed({
+     genre: ['male', 'female']
+})(Component)
+
+```
+
+
+
+```jsx
+// check with custom logic
+const MyTypedComponent = typed({
+     age: age => age > 18
+})(Component)
+```
+
+
+```jsx
+// check string with regex
+const MyTypedComponent = typed({
+     email:  /^((https?):\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
+})(Component)
+```
+
+
+## All it can do
 
 ```jsx
 import React from 'react';
