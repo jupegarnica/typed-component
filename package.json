@@ -17,10 +17,13 @@
     "build": "npm run _build",
     "_build": "rimraf dist && NODE_ENV=production babel src   --out-dir dist --source-maps",
     "predeploy": "npm run build",
-    "deploy": "git add . && git commit -m 'build' && git push origin master",
+    "deploy": "npm run commit && git push origin master",
     "postdeploy": "npm run publi",
     "publi": "npm publish",
-    "prepubli": "npm whoami || npm login"
+    "prepubli": "npm whoami || npm login",
+    "inject":"node insertUseTestIntoReadme.js",
+    "commit":"git add . && git commit -m 'build'",
+    "precommit":"npm run inject"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.2",

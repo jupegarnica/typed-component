@@ -65,40 +65,68 @@ const MyTypedComponent = typed({
 ```
 
 
+
+## Roadmap
+- [x] check type by constructor
+- [x] enum type (oneOf & oneOfType)
+- [x] shape type
+- [x] default props
+- [x] optional prop ([undefined, String])
+- [x] custom prop validation with a function (value,props, propName, ComponentName)
+- [x] Check RegEx
+- [x] Match prop name by RegEx
+- [x] arrayOf & objectOf examples
+- [ ] optional prop width ? { a?: Number}
+- [ ] instanceof
+- [ ] global and local settings to change how to warn invalid prop (throw error , log error or custom log)
+- [ ] support to handle static propTypes and static defaultProps
+
+
+
 ## All it can do
 
 ```jsx
 import React from 'react';
 import ReactDom from 'react-dom';
-import typedComponent from 'typed-component';
+import typedComponent from './index';
 
 const RenderProps = props => (
   <pre>{JSON.stringify(props, null, 4)}</pre>
 );
 
-const CheckConstructors =
-                typedComponent({
-                    String: String,
-                    Boolean: Boolean,
-                    Array: Array,
-                    Object: Object,
-                    String: String,
-                    Number: Number,
-                    Function: Function,
-                    RegExp: RegExp,
-                    Map: Map,
-                    Undefined: undefined,
-                    Null: null,
-                })
-                (RenderProps);
-/*
-...
-*/
+const ValidTypes = typedComponent({
+  String: String,
+  Boolean: Boolean,
+  Array: Array,
+  Object: Object,
+  String: String,
+  Number: Number,
+  Function: Function,
+  RegExp: RegExp,
+  Map: Map,
+  Undefined: undefined,
+  Null: null,
+})(RenderProps);
 
-describe('basic use by Constructor', () => {
+const Primitives = typedComponent({
+  color: 'blue',
+})(RenderProps);
+
+const div = document.createElement('div');
+const render = c => ReactDom.render(c, div);
+beforeAll(() => {
+  global.console = {
+    error: jest.fn(),
+    //  error: console.error,
+    // TODO: REMOVE THIS, it shouldn't log valid prop
+    log: jest.fn(),
+    log: console.log,
+  };
+});
+describe('basic usage by Constructor', () => {
   test('should render and test valid props', () => {
     render(
-      <CheckConstructors
+      <ValidTypes
         String='1'
         String={'text'}
         Number={5}
@@ -117,7 +145,7 @@ describe('basic use by Constructor', () => {
   });
   test('should render and log error on invalid props', () => {
     render(
-      <CheckConstructors
+      <ValidTypes
         String
         Number
         Boolean={0}
@@ -133,27 +161,19 @@ describe('basic use by Constructor', () => {
     expect(global.console.error).toHaveBeenCalledTimes(10);
   });
   test('should detect all types props are required', () => {
-    render(<CheckConstructors Undefined />);
+    render(<ValidTypes Undefined />);
     expect(global.console.error).toHaveBeenCalledTimes(10);
   });
 });
 
 describe('Primitives', () => {
-
-    const Primitives = typedComponent({
-         color: 'blue',
-    })
-    (RenderProps);
-
   test('should work primitives', () => {
     render(<Primitives color='blue' />);
-    expect(global.console.error)
-      .not.toHaveBeenCalled();
+    expect(global.console.error).not.toHaveBeenCalled();
   });
   test('should warn primitives', () => {
     render(<Primitives color='red' />);
-    expect(global.console.error)
-      .toHaveBeenCalledTimes(1);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -172,7 +192,90 @@ describe('Shapes', () => {
     expect(global.console.error).toHaveBeenCalledTimes(1);
   });
   test('should warn shapes', () => {
-    render(<Shape shape={{ b: 2, c:'c' }} />);
+    render(<Shape shape={{ b: 2, c: 'c' }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('Shapes multiple required keys', () => {
+  const Shape = typedComponent({
+    shape: {
+      a: String,
+      b: Number,
+    },
+  })(RenderProps);
+  test('should work', () => {
+    render(<Shape shape={{ a: 'a', b: 2 }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
+    render(<Shape shape={{ a: 'a' }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('Shapes recursively', () => {
+  const Shape = typedComponent({
+    shape: {
+      person: {
+        name: String,
+        age: Number,
+      },
+      id: String,
+    },
+  })(RenderProps);
+  test('should work', () => {
+    render(
+      <Shape
+        shape={{
+          person: {
+            name: 'juan',
+            age: 2,
+          },
+          id: 'asdasd',
+        }}
+      />,
+    );
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
+    render(
+      <Shape
+        shape={{
+          person: {
+            name: 'juan',
+            age: '2',
+          },
+          id: 'asdasd',
+        }}
+      />,
+    );
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('Should check a function', () => {
+  const Comp = typedComponent({
+    a: value => value > 1,
+  })(RenderProps);
+  test('should work', () => {
+    render(<Comp a={2} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
+    render(<Comp a={0} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+  const Comp2 = typedComponent({
+    start: (value, allProps, key) => value < allProps.end,
+  })(RenderProps);
+
+  test('multiple props works', () => {
+    render(<Comp2 start={1} end={4} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('multiple props warn', () => {
+    render(<Comp2 start={1} end={0} />);
     expect(global.console.error).toHaveBeenCalledTimes(1);
   });
 });
@@ -180,7 +283,7 @@ describe('Shapes', () => {
 describe('regex', () => {
   const Regex = typedComponent({
     '/a/': Number,
-    '/c/': Function,
+    [/c/]: Function,
     '/d/': ['hola', 'adios'],
   })(RenderProps);
   test('should work', () => {
@@ -214,6 +317,42 @@ describe('regex', () => {
   test('should warn', () => {
     render(<Regex a='a' c='b' />);
     expect(global.console.error).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('Handle Events', () => {
+  const HandleEvents = typedComponent({
+    [/^on/]: Function,
+  })(RenderProps);
+  test('should work', () => {
+    render(
+      <HandleEvents onClick={() => {}} onHover={() => {}} />,
+    );
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
+    render(<HandleEvents onClick={() => {}} onHover={1} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+  test('should warn', () => {
+    render(<HandleEvents onClick={1} onHover={1} />);
+    expect(global.console.error).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('onOnly valid props', () => {
+  const HandleEvents = typedComponent({
+    onClick: Function,
+    [/.+/]: () => false,
+  })(RenderProps);
+
+  test('should warn', () => {
+    render(<HandleEvents onClick={() => {}} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
+    render(<HandleEvents onClick={() => {}} id='id' />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -265,23 +404,35 @@ describe('regex check in shapes', () => {
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
   test('should warn', () => {
+    render(<Regex shape={{ a: 2, regex: 'regex' }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+  test('should warn', () => {
+    render(<Regex shape={{ a: '12', regex: '2' }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+  test('should warn', () => {
+    render(<Regex shape={{}} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
     render(<Regex shape={{ a: [] }} />);
     expect(global.console.error).toHaveBeenCalledTimes(1);
   });
+
   test('should work', () => {
     render(<Regex shape={{ regex: 'regex' }} />);
-    expect(global.console.error).toHaveBeenCalledTimes(0);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
   });
   test('should warn', () => {
     render(<Regex shape={{ regex: 2 }} />);
     expect(global.console.error).toHaveBeenCalledTimes(1);
   });
-   test('should work recursively', () => {
-     render(<Regex shape={{ regex: 'regex' }} />);
-     expect(global.console.error).toHaveBeenCalledTimes(0);
-   });
+  test('should work recursively', () => {
+    render(<Regex shape={{ regex: 'regex' }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
 });
-
 
 describe('regex check in shapes mixed', () => {
   const Regex = typedComponent({
@@ -298,44 +449,38 @@ describe('regex check in shapes mixed', () => {
     render(<Regex shape={{ a: '1' }} />);
     expect(global.console.error).toHaveBeenCalledTimes(1);
   });
-   test('should warn ', () => {
-     render(<Regex shape={{ a: 1, regex:1}} />);
-     expect(global.console.error).toHaveBeenCalledTimes(1);
-   });
-  // test('should work ', () => {
-  //   render(<Regex shape={{ ex: 'regex' }} />);
-  //   expect(global.console.error).toHaveBeenCalledTimes(1);
-  // });
-
+  test('should warn ', () => {
+    render(<Regex shape={{ a: 1, regex: 1 }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('regex check in shapes recursively', () => {
   const Regex = typedComponent({
     shape: {
       [/.+/]: {
-        a: Number
+        a: Number,
       },
     },
   })(RenderProps);
   test('should work ', () => {
-    render(<Regex shape={{ any: {a: 2} }} />);
+    render(<Regex shape={{ any: { a: 2 } }} />);
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
   test('should warn ', () => {
     render(<Regex shape={{ whatever: { a: 'a' } }} />);
     expect(global.console.error).toHaveBeenCalledTimes(1);
   });
-   test('should warn even if complex', () => {
-     render(<Regex shape={{ whatever: { a: 'a' } }} />);
-     expect(global.console.error).toHaveBeenCalledTimes(1);
-   });
+  test('should warn even if complex', () => {
+    render(<Regex shape={{ whatever: { a: 'a' } }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
 });
-
 
 describe('regex check in shapes recursively even if complex', () => {
   const Regex = typedComponent({
     shape: {
-      [/^price/]: Number,
+      [/^price/]: v => v > 0,
       [/^zip/]: String,
     },
   })(RenderProps);
@@ -344,7 +489,7 @@ describe('regex check in shapes recursively even if complex', () => {
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
   test('should warn ', () => {
-    render(<Regex shape={{ zipCode:'hw30' }} />);
+    render(<Regex shape={{ zipCode: 'hw30' }} />);
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
   test('should warn even if complex', () => {
@@ -353,21 +498,38 @@ describe('regex check in shapes recursively even if complex', () => {
   });
 });
 
+describe('Common cases', () => {
+  describe('arrayOf', () => {
+    const Comp = typedComponent({
+      arrayOfStrings: {
+        '/[0-9]+/': String,
+      },
+    })(RenderProps);
+    test('should work ', () => {
+      render(<Comp arrayOfStrings={['a', 'b']} />);
+      expect(global.console.error).toHaveBeenCalledTimes(0);
+    });
+    test('should warn ', () => {
+      render(<Comp arrayOfStrings={['a', 1]} />);
+      expect(global.console.error).toHaveBeenCalledTimes(1);
+    });
+  });
 
+  describe('ObjectOf', () => {
+    const Comp = typedComponent({
+      obj: {
+        '/.+/': Number,
+      },
+    })(RenderProps);
+    test('should work ', () => {
+      render(<Comp obj={{a:1,b:2}} />);
+      expect(global.console.error).toHaveBeenCalledTimes(0);
+    });
+    test('should warn ', () => {
+      render(<Comp obj={{ a: 1, b: '2' }} />);
+      expect(global.console.error).toHaveBeenCalledTimes(1);
+    });
+  });
+});
 
 ```
-
-## Roadmap
-- [x] check type by constructor
-- [x] enum type (oneOf & oneOfType)
-- [x] shape type
-- [x] default props
-- [x] optional prop ([undefined, String])
-- [x] custom prop validation with a function (value,props, propName, ComponentName)
-- [x] Check RegEx
-- [x] Match prop name by RegEx
-- [x] arrayOf & objectOf examples
-- [ ] optional prop width ? { a?: Number}
-- [ ] instanceof
-- [ ] global and local settings to change how to warn invalid prop (throw error , log error or custom log)
-- [ ] support to handle static propTypes and static defaultProps
