@@ -117,10 +117,7 @@ const render = c => ReactDom.render(c, div);
 beforeAll(() => {
   global.console = {
     error: jest.fn(),
-    //  error: console.error,
-    // TODO: REMOVE THIS, it shouldn't log valid prop
     log: jest.fn(),
-    log: console.log,
   };
 });
 describe('basic usage by Constructor', () => {
