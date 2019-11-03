@@ -24,18 +24,13 @@ export function isConstructor(f) {
 export const isPrimitive = value => !(value instanceof Object);
 // export const isPrimitive = value => Object(value) !== value;
 
-const iterateObject = (whatToDo, types, props) => {
+const checkObject = (whatToDo, types, props) => {
   const propsTypes = Object.keys(types).filter(notIsRegExp);
   const regExpToCheck = Object.keys(types).filter(isRegExp);
 
   const untestedReceivedProps = Object.keys(props).filter(
     propName => !propsTypes.includes(propName),
   );
-  if (whatToDo.name === 'isValidType') {
-    // console.log('untestedReceivedProps', untestedReceivedProps);
-    // console.log('propsTypes', propsTypes);
-    // console.log('regExpToCheck', regExpToCheck);
-  }
   let response;
 
   propsTypes.forEach(propName => {
@@ -62,7 +57,7 @@ const iterateObject = (whatToDo, types, props) => {
 };
 
 export const checkShape = (types, props) =>
-  iterateObject(isValidType, types, props);
+  checkObject(isValidType, types, props);
 
 export const isValidType = (type, value, props, propName) => {
   if (isType(RegExp)(type)) {
@@ -110,7 +105,7 @@ const typedComponent = (
   types = {},
   defaults = {},
 ) => Component => props => {
-  iterateObject(testOrWarn, types, props);
+  checkObject(testOrWarn, types, props);
 
   const _props = {
     ...defaults,
