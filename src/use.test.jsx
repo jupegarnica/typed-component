@@ -109,6 +109,67 @@ describe('Shapes', () => {
   });
 });
 
+
+describe('Shapes multiple required keys', () => {
+  const Shape = typedComponent({
+    shape: {
+      a: String,
+      b: Number
+    },
+  })(RenderProps);
+  test('should work', () => {
+    render(<Shape shape={{ a: 'a', b:2 }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+   test('should warn', () => {
+     render(<Shape shape={{ a: 'a' }} />);
+     expect(global.console.error).toHaveBeenCalledTimes(1);
+   });
+
+});
+
+
+describe('Shapes recursively', () => {
+  const Shape = typedComponent({
+    shape: {
+      person: {
+        name: String,
+        age: Number
+
+      },
+      id: String,
+    },
+  })(RenderProps);
+  test('should work', () => {
+    render(
+      <Shape
+        shape={{
+          person: {
+            name: 'juan',
+            age: 2,
+          },
+          id: 'asdasd',
+        }}
+      />,
+    );
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
+    render(
+      <Shape
+        shape={{
+          person: {
+            name: 'juan',
+            age: '2',
+          },
+          id: 'asdasd',
+        }}
+      />,
+    );
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('Should check a function', () => {
   const Comp = typedComponent({
     a: value => value > 1,

@@ -31,33 +31,32 @@ const checkObject = (whatToDo, types, props) => {
   const untestedReceivedProps = Object.keys(props).filter(
     propName => !propsTypes.includes(propName),
   );
-  let response;
+  let valids = [];
 
   propsTypes.forEach(propName => {
-    response = whatToDo(
+    valids.push(whatToDo(
       types[propName],
       props[propName],
       props,
       propName,
-    );
+    ))
   });
   regExpToCheck.forEach(regexpString => {
     untestedReceivedProps.forEach(propName => {
       if (stringToRegExp(regexpString).test(propName)) {
-        response = whatToDo(
+        valids.push(whatToDo(
           types[regexpString],
           props[propName],
           props,
           propName,
-        );
+        ))
       }
     });
   });
-  return response;
+  return valids.every(Boolean);
 };
 
-export const checkShape = (types, props) =>
-  checkObject(isValidType, types, props);
+export const checkShape = (types, props) => checkObject(isValidType, types, props);
 
 export const isValidType = (type, value, props, propName) => {
   if (isType(RegExp)(type)) {
@@ -68,8 +67,8 @@ export const isValidType = (type, value, props, propName) => {
     return isType(type)(value);
   } else if (isType(Array)(type)) {
     return type.some(_type => isValidType(_type, value));
-  } else if (isType(Object)(type) && isType(Object)(value)) {
-    return checkShape(type, value);
+  } else if (isType(Object)(type) && value instanceof Object) {
+    return checkShape(type, value);;
   } else if (isNormalFunction(type)) {
     return type(value, props, propName);
   }
@@ -80,12 +79,14 @@ const toString = JSON.stringify;
 
 const testOrWarn = (type, value, props, propName) => {
   try {
-    return isValidType(type, value, props, propName) ||
+    return (
+      isValidType(type, value, props, propName) ||
       error(
         `prop ${propName} with value ${toString(
           value,
         )} do not match type ${toString(type)}`,
-      );
+      )
+    );
   } catch (error) {
     return error(error);
   }
