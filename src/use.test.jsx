@@ -327,12 +327,21 @@ describe('regex check in shapes', () => {
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
   test('should warn', () => {
+    render(<Regex shape={{ a: 2, regex: 'regex' }} />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
+  test('should warn', () => {
+    render(<Regex shape={{}} />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
     render(<Regex shape={{ a: [] }} />);
     expect(global.console.error).toHaveBeenCalledTimes(1);
   });
+
   test('should work', () => {
     render(<Regex shape={{ regex: 'regex' }} />);
-    expect(global.console.error).toHaveBeenCalledTimes(0);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
   });
   test('should warn', () => {
     render(<Regex shape={{ regex: 2 }} />);
@@ -340,7 +349,7 @@ describe('regex check in shapes', () => {
   });
   test('should work recursively', () => {
     render(<Regex shape={{ regex: 'regex' }} />);
-    expect(global.console.error).toHaveBeenCalledTimes(0);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
   });
 });
 
