@@ -72,7 +72,7 @@ const MyTypedComponent = typed({
 - [x] shape type
 - [x] default props
 - [x] optional prop ([undefined, String])
-- [x] custom prop validation with a function (value,props, propName, ComponentName)
+- [x] custom prop validation with a function (value, propName, allProps)
 - [x] Check RegEx
 - [x] Match prop name by RegEx
 - [x] arrayOf & objectOf examples
