@@ -276,8 +276,26 @@ describe('Should check a function', () => {
     expect(global.console.error).toHaveBeenCalledTimes(1);
   });
 });
+describe('Should check string by regex', () => {
+  const Comp = typedComponent({
+    a: /^a/i,
+  })(RenderProps);
+  test('should work', () => {
+    render(<Comp a='a' />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+   test('should work', () => {
+     render(<Comp a='A' />);
+     expect(global.console.error).toHaveBeenCalledTimes(0);
+   });
+   test('should warn', () => {
+     render(<Comp a='ba' />);
+     expect(global.console.error).toHaveBeenCalledTimes(1);
+   });
 
-describe('regex', () => {
+});
+
+describe('match key by regex', () => {
   const Regex = typedComponent({
     '/a/': Number,
     [/c/]: Function,
