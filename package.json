@@ -1,6 +1,6 @@
 {
   "name": "typed-component",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "type": "module",
   "description": "",
   "main": "dist/index.js",
@@ -21,9 +21,9 @@
     "postdeploy": "npm run publi",
     "publi": "npm publish",
     "prepubli": "npm whoami || npm login",
-    "inject":"node insertUseTestIntoReadme.js",
-    "commit":"git add . && git commit -m 'build'",
-    "precommit":"npm run inject"
+    "inject": "node insertUseTestIntoReadme.js",
+    "commit": "git add . && git commit -m 'build'",
+    "precommit": "npm run inject"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.2",
