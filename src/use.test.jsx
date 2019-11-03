@@ -292,11 +292,6 @@ describe('regex advanced', () => {
     render(<Regex a='a' />);
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
-   test('should work', () => {
-     render(<Regex a={2} />);
-     expect(global.console.error).toHaveBeenCalledTimes(1);
-   });
-
   test('should work', () => {
     render(<Regex a='a' b={2} />);
     expect(global.console.error).toHaveBeenCalledTimes(0);
