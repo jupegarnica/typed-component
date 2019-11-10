@@ -23,7 +23,11 @@
     "prepubli": "npm whoami || npm login",
     "inject": "node insertUseTestIntoReadme.js",
     "commit": "git add . && git commit -m 'build'",
-    "precommit": "npm run inject"
+    "precommit": "npm run inject",
+    "code:clean": "yarn code:lint && yarn code:format",
+    "code:lint": "eslint --ext .js,.jsx,.ts,.tsx \"src/\" --fix",
+    "code:format": "prettier './src/**/**.{js,jsx,ts,tsx}' --write",
+    "code:check:rules": "eslint --print-config .eslintrc.js | eslint-config-prettier-check"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.2",
@@ -33,7 +37,8 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.6",
     "rimraf": "^3.0.0",
-    "jest": "^24.9.0"
+    "jest": "^24.9.0",
+    "poetic": "^1.1.0"
   },
   "browserslist": {
     "production": [
