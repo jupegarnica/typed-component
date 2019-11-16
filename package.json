@@ -9,9 +9,9 @@
     "dist"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "npm run test:watch",
     "test:dist": "jest dist",
-    "test:watch": "jest --watchAll",
+    "test:watch": "jest src --watchAll",
     "postbuild": "npm test",
     "patch": "npm version patch",
     "prebuild": "npm run patch",
