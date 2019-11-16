@@ -400,10 +400,6 @@ describe('regex check in shapes recursively', () => {
     render(<Regex shape={{ whatever: { a: 'a' } }} />);
     expect(global.console.error).toHaveBeenCalledTimes(1);
   });
-  test('should warn even if complex', () => {
-    render(<Regex shape={{ whatever: { a: 'a' } }} />);
-    expect(global.console.error).toHaveBeenCalledTimes(1);
-  });
 });
 
 describe('regex check in shapes recursively even if complex', () => {
@@ -456,6 +452,11 @@ describe('Common cases', () => {
     });
     test('should warn ', () => {
       render(<Comp obj={{ a: 1, b: '2' }} />);
+      expect(global.console.error).toHaveBeenCalledTimes(1);
+    });
+    test('should warn ', () => {
+      render(<Comp obj={{ a: 1, b: '2', c:
+      '3' }} />);
       expect(global.console.error).toHaveBeenCalledTimes(1);
     });
   });

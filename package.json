@@ -21,10 +21,10 @@
     "predeploy": "npm run build",
     "deploy": "npm run commit && git push origin master",
     "postdeploy": "npm run publi",
-    "publi": "npm publish",
+    "publi": "#npm publish",
     "prepubli": "npm whoami || npm login",
     "inject": "node insertUseTestIntoReadme.js",
-    "commit": "git add . && git commit -m 'build'",
+    "commit": "git add . && git commit -m 'build done'",
     "precommit": "npm run inject"
   },
   "devDependencies": {

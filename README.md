@@ -18,6 +18,8 @@ yarn add typed-component
 ### Use
 
 
+##### Check props
+
 ```jsx
 import typed from 'typed-component';
 import Component from './component';
@@ -72,6 +74,31 @@ const MyTypedComponent = typed({
 })(Component)
 ```
 
+##### Map props
+
+```jsx
+const MyTypedComponent = typed({
+     name: String
+}, {
+     name: (value = 'anonymous') => value.trim()
+})(Component)
+```
+
+```jsx
+const MyTypedComponent = typed({
+     name: [String,undefined]
+  }, {
+     name: value => value || `anonymous`
+  })(Component)
+```
+
+```jsx
+const MyTypedComponent = typed({
+     age: [Number,undefined]
+}, {
+     age: (value = 0) => `${value} years`
+})(Component)
+```
 
 
 ## Roadmap
