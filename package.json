@@ -12,7 +12,7 @@
     "test": "npm run test:watch",
     "test:dist": "jest dist",
     "test:watch": "jest src --watchAll",
-    "postbuild": "npm test",
+    "postbuild": "npm run test:dist",
     "patch": "npm version patch",
     "prebuild": "npm run patch",
     "build": "npm run _build",
