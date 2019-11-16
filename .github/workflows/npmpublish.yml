@@ -14,7 +14,6 @@ jobs:
           node-version: 12
       - run: npm i
       - run: npm run _build
-      - run: npm run test:dist
 
   publish-npm:
     needs: build
@@ -26,7 +25,7 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/
       - run: npm i
-      - run: npm publi
+      - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 
@@ -40,7 +39,3 @@ jobs:
           node-version: 12
           registry-url: https://npm.pkg.github.com/
           scope: '@jupegarnica'
-      - run: npm i
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
