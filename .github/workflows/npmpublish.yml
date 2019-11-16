@@ -18,10 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
+          with:
+          node-version: 12
       - uses: actions/npm@master
-        with:
-          env:
-            NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+        env:
+          NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
 
   publish-gpr:
     needs: build
