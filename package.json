@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "test:dist": "jest dist",
     "test:watch": "jest --watchAll",
     "postbuild": "npm test",
     "patch": "npm version patch",
