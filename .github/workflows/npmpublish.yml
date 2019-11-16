@@ -18,11 +18,10 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-          registry-url: https://registry.npmjs.org/
       - uses: actions/npm@master
         with:
+          registry-url: https://registry.npmjs.org/
+          node-version: 12
           env:
             NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
 
