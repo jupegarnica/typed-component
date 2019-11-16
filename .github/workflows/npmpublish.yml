@@ -20,8 +20,6 @@ jobs:
       - uses: actions/setup-node@v1
       - uses: actions/npm@master
         with:
-          registry-url: https://registry.npmjs.org/
-          node-version: 12
           env:
             NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
 
