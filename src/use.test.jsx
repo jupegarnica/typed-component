@@ -222,7 +222,7 @@ describe('match key by regex', () => {
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
   test('should work', () => {
-    render(<Regex a={2} c={() => {}} />);
+    render(<Regex a={2} c={() => {}} d='hola' />);
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
   test('should work', () => {
