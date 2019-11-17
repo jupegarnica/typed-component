@@ -33,6 +33,14 @@ const MyTypedComponent = typed({
 ```jsx
 // check enums
 const MyTypedComponent = typed({
+     id: [Number, String]   // id could be a number or string
+})(Component)
+
+```
+
+```jsx
+// check enums
+const MyTypedComponent = typed({
      id: [undefined, String]   // optional prop
 })(Component)
 

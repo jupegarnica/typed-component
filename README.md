@@ -33,6 +33,14 @@ const MyTypedComponent = typed({
 ```jsx
 // check enums
 const MyTypedComponent = typed({
+     id: [Number, String]   // id could be a number or string
+})(Component)
+
+```
+
+```jsx
+// check enums
+const MyTypedComponent = typed({
      id: [undefined, String]   // optional prop
 })(Component)
 
@@ -94,24 +102,6 @@ const RenderProps = props => (
   <pre>{JSON.stringify(props, null, 4)}</pre>
 );
 
-const ValidTypes = typedComponent({
-  String: String,
-  Boolean: Boolean,
-  Array: Array,
-  Object: Object,
-  String: String,
-  Number: Number,
-  Function: Function,
-  RegExp: RegExp,
-  Map: Map,
-  Undefined: undefined,
-  Null: null,
-})(RenderProps);
-
-const Primitives = typedComponent({
-  color: 'blue',
-})(RenderProps);
-
 const div = document.createElement('div');
 const render = c => ReactDom.render(c, div);
 beforeAll(() => {
@@ -121,6 +111,20 @@ beforeAll(() => {
   };
 });
 describe('basic usage by Constructor', () => {
+  const ValidTypes = typedComponent({
+    String: String,
+    Boolean: Boolean,
+    Array: Array,
+    Object: Object,
+    String: String,
+    Number: Number,
+    Function: Function,
+    RegExp: RegExp,
+    Map: Map,
+    Undefined: undefined,
+    Null: null,
+  })(RenderProps);
+
   test('should render and test valid props', () => {
     render(
       <ValidTypes
@@ -164,6 +168,10 @@ describe('basic usage by Constructor', () => {
 });
 
 describe('Primitives', () => {
+  const Primitives = typedComponent({
+    color: 'blue',
+  })(RenderProps);
+
   test('should work primitives', () => {
     render(<Primitives color='blue' />);
     expect(global.console.error).not.toHaveBeenCalled();
@@ -209,6 +217,10 @@ describe('Shapes multiple required keys', () => {
     render(<Shape shape={{ a: 'a' }} />);
     expect(global.console.error).toHaveBeenCalledTimes(1);
   });
+   test('should warn one time per prop (not 2 even if 2 keys will fail)', () => {
+     render(<Shape shape={{  }} />);
+     expect(global.console.error).toHaveBeenCalledTimes(1);
+   });
 });
 
 describe('Shapes recursively', () => {
@@ -284,15 +296,14 @@ describe('Should check string by regex', () => {
     render(<Comp a='a' />);
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
-   test('should work', () => {
-     render(<Comp a='A' />);
-     expect(global.console.error).toHaveBeenCalledTimes(0);
-   });
-   test('should warn', () => {
-     render(<Comp a='ba' />);
-     expect(global.console.error).toHaveBeenCalledTimes(1);
-   });
-
+  test('should work', () => {
+    render(<Comp a='A' />);
+    expect(global.console.error).toHaveBeenCalledTimes(0);
+  });
+  test('should warn', () => {
+    render(<Comp a='ba' />);
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('match key by regex', () => {
@@ -310,7 +321,7 @@ describe('match key by regex', () => {
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
   test('should work', () => {
-    render(<Regex a={2} c={() => {}} />);
+    render(<Regex a={2} c={() => {}} d='hola' />);
     expect(global.console.error).toHaveBeenCalledTimes(0);
   });
   test('should work', () => {
@@ -485,10 +496,6 @@ describe('regex check in shapes recursively', () => {
     render(<Regex shape={{ whatever: { a: 'a' } }} />);
     expect(global.console.error).toHaveBeenCalledTimes(1);
   });
-  test('should warn even if complex', () => {
-    render(<Regex shape={{ whatever: { a: 'a' } }} />);
-    expect(global.console.error).toHaveBeenCalledTimes(1);
-  });
 });
 
 describe('regex check in shapes recursively even if complex', () => {
@@ -536,11 +543,16 @@ describe('Common cases', () => {
       },
     })(RenderProps);
     test('should work ', () => {
-      render(<Comp obj={{a:1,b:2}} />);
+      render(<Comp obj={{ a: 1, b: 2 }} />);
       expect(global.console.error).toHaveBeenCalledTimes(0);
     });
     test('should warn ', () => {
       render(<Comp obj={{ a: 1, b: '2' }} />);
+      expect(global.console.error).toHaveBeenCalledTimes(1);
+    });
+    test('should warn ', () => {
+      render(<Comp obj={{ a: 1, b: '2', c:
+      '3' }} />);
       expect(global.console.error).toHaveBeenCalledTimes(1);
     });
   });

@@ -1,6 +1,6 @@
 {
   "name": "typed-component",
-  "version": "1.0.17",
+  "version": "1.0.26",
   "type": "module",
   "description": "",
   "main": "dist/index.js",
@@ -9,25 +9,23 @@
     "dist"
   ],
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watchAll",
-    "postbuild": "npm test",
+    "test": "npm run test:watch",
+    "test:dist": "jest dist",
+    "test:watch": "jest src --watchAll",
+    "postbuild": "npm run test:dist",
     "patch": "npm version patch",
     "prebuild": "npm run patch",
     "build": "npm run _build",
-    "_build": "rimraf dist && NODE_ENV=production babel src   --out-dir dist --source-maps",
+    "env": "NODE_ENV=production ||set NODE_ENV=production",
+    "_build": "rimraf dist && npm run env && babel src   --out-dir dist --source-maps",
     "predeploy": "npm run build",
     "deploy": "npm run commit && git push origin master",
     "postdeploy": "npm run publi",
-    "publi": "npm publish",
+    "publi": "#npm publish",
     "prepubli": "npm whoami || npm login",
     "inject": "node insertUseTestIntoReadme.js",
-    "commit": "git add . && git commit -m 'build'",
-    "precommit": "npm run inject",
-    "code:clean": "yarn code:lint && yarn code:format",
-    "code:lint": "eslint --ext .js,.jsx,.ts,.tsx \"src/\" --fix",
-    "code:format": "prettier './src/**/**.{js,jsx,ts,tsx}' --write",
-    "code:check:rules": "eslint --print-config .eslintrc.js | eslint-config-prettier-check"
+    "commit": "git add . && git commit -m 'build done'",
+    "precommit": "npm run inject"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.2",

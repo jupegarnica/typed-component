@@ -229,14 +229,3 @@ describe('is Valid type', () => {
     }).toThrow('must be greater than 5');
   });
 });
-
-
-// describe('test RegEx', () => {
-//   test('should ', () => {
-//       let regex = new RegExp(eval('/.la/'));
-//       expect('hola'.match(regex)).toBeTruthy();
-//       console.log(regex.test('ola'))
-//   })
-
-
-// })

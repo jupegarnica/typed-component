@@ -31,10 +31,10 @@ const checkObject = (whatToDo, types, props) => {
   const untestedReceivedProps = Object.keys(props).filter(
     propName => !propsTypes.includes(propName),
   );
-  let areValids = [];
+  let allValids = [];
 
   propsTypes.forEach(propName => {
-    areValids.push(whatToDo(
+    allValids.push(whatToDo(
       types[propName],
       props[propName],
       props,
@@ -44,7 +44,7 @@ const checkObject = (whatToDo, types, props) => {
   regExpToCheck.forEach(regexpString => {
     untestedReceivedProps.forEach(propName => {
       if (stringToRegExp(regexpString).test(propName)) {
-        areValids.push(whatToDo(
+        allValids.push(whatToDo(
           types[regexpString],
           props[propName],
           props,
@@ -53,7 +53,7 @@ const checkObject = (whatToDo, types, props) => {
       }
     });
   });
-  return areValids.every(Boolean);
+  return allValids.every(Boolean);
 };
 
 export const checkShape = (types, props) => checkObject(isValidType, types, props);
