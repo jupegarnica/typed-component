@@ -11,12 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Install dependencies
-        run: yarn install
+        run: npm install
       - name: Build
-        run: yarn run _build
+        run: npm run _build
       - name: Create .npmrc
         run: echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" >> ~/.npmrc
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       - name: Publish
-        run: yarn publish --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
+        run: npm publish --new-version ${GITHUB_REF#"refs/tags/"} --no-git-tag-version
