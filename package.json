@@ -14,6 +14,7 @@
     "test:watch": "jest src --watchAll",
     "postbuild": "npm run test:dist",
     "patch": "npm version patch",
+    "postpatch": "git push origin master --tags",
     "prebuild": "npm run patch",
     "build": "npm run _build",
     "env": "NODE_ENV=production || set NODE_ENV=production",
