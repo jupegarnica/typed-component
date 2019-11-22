@@ -2,7 +2,7 @@
 
 Another syntax to type props
 
-
+[![npm version](https://badge.fury.io/js/typed-component.svg)](https://badge.fury.io/js/typed-component)
 
 ## Get started
 
@@ -68,7 +68,7 @@ const MyTypedComponent = typed({
 ```jsx
 // check string with regex
 const MyTypedComponent = typed({
-     email:  /^((https?):\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
+     url:  /^((https?):\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
 })(Component)
 ```
 
