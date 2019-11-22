@@ -2,7 +2,7 @@
 
 Another syntax to type props
 
-[![npm version](https://badge.fury.io/js/typed-component.svg)](https://badge.fury.io/js/typed-component)
+[![npm version](https://badge.fury.io/js/typed-component.svg)](https://www.npmjs.com/package/typed-component)
 
 ## Get started
 
