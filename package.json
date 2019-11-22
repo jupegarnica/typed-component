@@ -35,7 +35,10 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.6",
     "rimraf": "^3.0.0",
-    "jest": "^24.9.0"
+    "jest": "^24.9.0",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "storybook": "^5.1.11"
   },
   "browserslist": {
     "production": [
@@ -64,10 +67,5 @@
   "bugs": {
     "url": "https://github.com/jupegarnica/typed-component/issues"
   },
-  "homepage": "https://github.com/jupegarnica/typed-component#readme",
-  "dependencies": {
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
-    "storybook": "^5.1.11"
-  }
+  "homepage": "https://github.com/jupegarnica/typed-component#readme"
 }
