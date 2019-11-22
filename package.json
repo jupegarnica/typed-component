@@ -16,7 +16,7 @@
     "patch": "npm version patch",
     "prebuild": "npm run patch",
     "build": "npm run _build",
-    "env": "NODE_ENV=production ||set NODE_ENV=production",
+    "env": "NODE_ENV=production || set NODE_ENV=production",
     "_build": "rimraf dist && npm run env && babel src   --out-dir dist --source-maps",
     "predeploy": "npm run build",
     "deploy": "npm run commit && git push origin master",

@@ -68,7 +68,7 @@ const MyTypedComponent = typed({
 ```jsx
 // check string with regex
 const MyTypedComponent = typed({
-     email:  /^((https?):\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
+     url:  /^((https?):\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
 })(Component)
 ```
 
