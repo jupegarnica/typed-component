@@ -34,29 +34,34 @@ const checkObject = (whatToDo, types, props) => {
   let allValids = [];
 
   propsTypes.forEach(propName => {
-    allValids.push(whatToDo(
-      types[propName],
-      props[propName],
-      props,
-      propName,
-    ))
+    allValids.push(
+      whatToDo(
+        types[propName],
+        props[propName],
+        props,
+        propName,
+      ),
+    );
   });
   regExpToCheck.forEach(regexpString => {
     untestedReceivedProps.forEach(propName => {
       if (stringToRegExp(regexpString).test(propName)) {
-        allValids.push(whatToDo(
-          types[regexpString],
-          props[propName],
-          props,
-          propName,
-        ))
+        allValids.push(
+          whatToDo(
+            types[regexpString],
+            props[propName],
+            props,
+            propName,
+          ),
+        );
       }
     });
   });
   return allValids.every(Boolean);
 };
 
-export const checkShape = (types, props) => checkObject(isValidType, types, props);
+export const checkShape = (types, props) =>
+  checkObject(isValidType, types, props);
 
 export const isValidType = (type, value, props, propName) => {
   if (isType(RegExp)(type)) {
@@ -68,7 +73,7 @@ export const isValidType = (type, value, props, propName) => {
   } else if (isType(Array)(type)) {
     return type.some(_type => isValidType(_type, value));
   } else if (isType(Object)(type) && value instanceof Object) {
-    return checkShape(type, value);;
+    return checkShape(type, value);
   } else if (isNormalFunction(type)) {
     return type(value, props, propName);
   }
@@ -77,7 +82,7 @@ export const isValidType = (type, value, props, propName) => {
 
 const toString = JSON.stringify;
 
-const testOrWarn = (type, value, props, propName) => {
+const checkTypeOrWarn = (type, value, props, propName) => {
   try {
     return (
       isValidType(type, value, props, propName) ||
@@ -94,7 +99,6 @@ const testOrWarn = (type, value, props, propName) => {
 
 const error = (...args) => {
   console.error(...args);
-  // console.log(...args);
 };
 
 const checkRegExp = (regExp, value) => regExp.test(value);
@@ -106,7 +110,7 @@ const typedComponent = (
   types = {},
   defaults = {},
 ) => Component => props => {
-  checkObject(testOrWarn, types, props);
+  checkObject(checkTypeOrWarn, types, props);
 
   const _props = {
     ...defaults,
