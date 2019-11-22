@@ -13,7 +13,7 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Build
-        run: yarn run build
+        run: yarn run _build
       - name: Create .npmrc
         run: echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" >> ~/.npmrc
         env:
